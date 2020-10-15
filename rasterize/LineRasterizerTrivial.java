@@ -12,7 +12,7 @@ public class LineRasterizerTrivial extends LineRasterizer{
     @Override
     public void drawLine(int x1, int y1, int x2, int y2){
         double k = (y2-y1)/(double)(x2-x1);
-        double q = 0;
+        double q = 1;
         for(int x = x1; x<=x2; x++) {
             double y = k*x + q;
             raster.setPixel(x, (int)y, 0xff0000);

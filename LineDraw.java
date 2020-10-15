@@ -18,7 +18,7 @@ public class LineDraw {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() ->
-                new Main(800, 600).start()
+                new LineDraw(800, 600).start()
         );
     }
 
@@ -50,13 +50,20 @@ public class LineDraw {
         rasterBufferedImage = new RasterBufferedImage(width, height);
         lineRasterizerTrivial = new LineRasterizerTrivial(rasterBufferedImage);
         jPanel = new JPanel(){
-
+            private static final long serialVersionUID = 1L;
             @Override
             public void paintComponent(Graphics graphics){
                 super.paintComponent(graphics);
                 present(graphics);
             }
         };
+
+        jPanel.setPreferredSize(new Dimension(width, height));
+
+        jFrame.add(jPanel, BorderLayout.CENTER);
+        jFrame.add(jPanel);
+        jFrame.pack();
+        jFrame.setVisible(true);
 
         jPanel.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
