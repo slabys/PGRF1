@@ -12,6 +12,7 @@ public class LineDraw {
     private RasterBufferedImage rasterBufferedImage;
     private int x1,x2,y1,y2;
     private LineRasterizerTrivial lineRasterizerTrivial;
+    int i = 0;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() ->
@@ -65,7 +66,6 @@ public class LineDraw {
         jPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                int i = 0;
                 if (e.getButton() == MouseEvent.BUTTON1){
                     if (i == 0) {
                         x1 = e.getX();
