@@ -4,10 +4,7 @@ import rasterize.RasterBufferedImage;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 
 public class LineDraw {
 
@@ -36,7 +33,7 @@ public class LineDraw {
     private void draw(){
         clear(0xA222FF);
         //Draw Line
-        lineRasterizerTrivial.rasterize(x1,y1,x2,y2, Color.YELLOW);
+        lineRasterizerTrivial.drawLine(x1,y1,x2,y2);
         jPanel.repaint();
     }
 
@@ -65,22 +62,25 @@ public class LineDraw {
         jFrame.pack();
         jFrame.setVisible(true);
 
-        jPanel.addMouseMotionListener(new MouseMotionAdapter() {
+        jPanel.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseMoved(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 int i = 0;
-                if (i == 0) {
-                    x1 = e.getX();
-                    y1 = e.getY();
-                    i++;
-                } else {
-                    x2 = e.getX();
-                    y2 = e.getY();
-                    i = 0;
+                if (e.getButton() == MouseEvent.BUTTON1){
+                    if (i == 0) {
+                        x1 = e.getX();
+                        y1 = e.getY();
+                        i++;
+                    } else {
+                        x2 = e.getX();
+                        y2 = e.getY();
+                        i = 0;
+                        draw();
+                    }
+                    jPanel.repaint();
                 }
-                draw();
             }
-        }) ;
+        });
     }
 
     public void present(Graphics graphics){
