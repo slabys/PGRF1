@@ -1,0 +1,2 @@
+public class Polynom {
+}

@@ -1,7 +1,5 @@
 package rasterize;
 
-import java.awt.*;
-
 public class LineRasterizerTrivial extends LineRasterizer{
     public LineRasterizerTrivial(Raster raster) {
         super(raster);

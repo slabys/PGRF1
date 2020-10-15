@@ -67,7 +67,7 @@ public class Canvas {
         int y2 = 50;
 
         double k = (y2-y1)/(double)(x2-x1);
-        //ouble k = 50/200f;
+        //double k = 50/200f;
         System.out.println("k "+k);
         for(int x = 0; x<=200; x++) {
             double y = k*x + 0;
