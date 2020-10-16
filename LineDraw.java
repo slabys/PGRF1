@@ -34,7 +34,7 @@ public class LineDraw {
     private void draw(){
         clear(0xA222FF);
         //Draw Line
-        lineRasterizerTrivial.drawLine(x1,y1,x2,y2);
+        lineRasterizerTrivial.rasterize(x1,y1,x2,y2, Color.YELLOW);
         jPanel.repaint();
     }
 
@@ -70,10 +70,12 @@ public class LineDraw {
                     if (i == 0) {
                         x1 = e.getX();
                         y1 = e.getY();
+                        System.out.println(x1 + " , " + y1);
                         i++;
                     } else {
                         x2 = e.getX();
                         y2 = e.getY();
+                        System.out.println(x2 + " , " + y2);
                         i = 0;
                         draw();
                     }

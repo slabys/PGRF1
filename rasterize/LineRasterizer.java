@@ -25,18 +25,18 @@ public abstract class LineRasterizer {
     }
 
     public void rasterize(Line line) {
-        setColor(Color.GREEN);
+        setColor(line.getColor());
         drawLine(line.getX1(), line.getY1(), line.getX2(), line.getY2());
     }
 
     public void rasterize(int x1, int y1, int x2, int y2, Color color) {
-        setColor(Color.GREEN);
+        setColor(color);
         drawLine(x1,y1,x2,y2);
     }
 
     protected void drawLine(int x1, int y1, int x2, int y2) {
         Point p1 = new Point(x1, y1);
         Point p2 = new Point(x2, y2);
-        Line line = new Line(x1, y1, x2, y2, 0x00FF0000);
+        Line line = new Line(x1, y1, x2, y2, this.color.getRGB());
     }
 }
