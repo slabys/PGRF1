@@ -1,5 +1,9 @@
 package rasterize;
 
+import model.Line;
+
+import java.util.ArrayList;
+
 public class FilledLineRasterizer extends LineRasterizer {
 
     public FilledLineRasterizer(Raster raster) {
@@ -20,6 +24,12 @@ public class FilledLineRasterizer extends LineRasterizer {
     public void drawLine(int x1, int y1, int x2, int y2) {
         //trivial(x1, y1, x2, y2);
         midpoint(x1, y1, x2, y2);
+    }
+
+    public void drawPolygonLines(ArrayList<Line> lines){
+        for(Line line : lines){
+            rasterize(line);
+        }
     }
 
     //Midpoint

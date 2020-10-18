@@ -41,13 +41,6 @@ public class PolygonDraw {
         rasterBufferedImage.clear();
     }
 
-    private void draw(){
-        clear(0xA222FF);
-        //Draw Line
-        polygonRasterizer.rasterize(x1,y1,x2,y2, Color.YELLOW);
-        jPanel.repaint();
-    }
-
     public PolygonDraw(int width, int height){
         JFrame jFrame = new JFrame();
         jFrame.setLayout(new BorderLayout());
@@ -56,7 +49,7 @@ public class PolygonDraw {
         jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         rasterBufferedImage = new RasterBufferedImage(width, height);
-        polygonRasterizer = new PolygonRasterizer(rasterBufferedImage);
+        filledLineRasterizer = new FilledLineRasterizer(rasterBufferedImage);
         jPanel = new JPanel(){
             private static final long serialVersionUID = 1L;
             @Override
@@ -89,7 +82,7 @@ public class PolygonDraw {
                         model.Point point = new model.Point(x2, y2);
                         polygon.addPoint(point);
                         i = true;
-                        draw();
+                        filledLineRasterizer.rasterize(x1, y1, x2, y2, Color.GREEN);
                     }
                     jPanel.repaint();
                 }
