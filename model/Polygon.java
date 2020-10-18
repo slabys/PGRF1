@@ -9,10 +9,6 @@ public class Polygon {
     public Polygon() {
     }
 
-    public Polygon(ArrayList<Point> polygon) {
-        this.polygonPointList = polygonPointList;
-    }
-
     public ArrayList<Point> getPolygonPointList() {
         return polygonPointList;
     }

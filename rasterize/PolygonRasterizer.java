@@ -4,10 +4,21 @@ import model.Line;
 import model.Point;
 import model.Polygon;
 
-import java.util.List;
+public class PolygonRasterizer extends LineRasterizer{
 
-public class PolygonRasterizer {
 
-    //TODO
+    public PolygonRasterizer(Raster raster) {
+        super(raster);
+    }
+
+    public void rasterize(Polygon polygon){
+
+        for(int i = 0; i <= polygon.getPolygonPointList().size();i =+ 1){
+            Point firstPoint = polygon.getPolygonPointList().get(i);
+            Point secondPoint = polygon.getPolygonPointList().get(i+1);
+            Line line = new Line(firstPoint, secondPoint, 0xff0000);
+            rasterize(line);
+        }
+    }
 
 }

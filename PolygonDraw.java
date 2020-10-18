@@ -1,22 +1,33 @@
 import rasterize.FilledLineRasterizer;
+import rasterize.LineRasterizer;
+import rasterize.PolygonRasterizer;
 import rasterize.RasterBufferedImage;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-public class LineDraw {
+public class PolygonDraw {
 
     private JPanel jPanel;
     private RasterBufferedImage rasterBufferedImage;
-    private int x1,x2,y1,y2;
     private FilledLineRasterizer filledLineRasterizer;
+    private PolygonRasterizer polygonRasterizer;
+    private model.Polygon polygon = new model.Polygon();
+    private int x1,x2,y1,y2;
     private boolean i = true;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() ->
-                new LineDraw(800, 600).start()
+                new PolygonDraw(800, 600).start()
         );
+    }
+
+    public void present(Graphics graphics){
+        rasterBufferedImage.repaint(graphics);
     }
 
     public void start() {
@@ -33,11 +44,11 @@ public class LineDraw {
     private void draw(){
         clear(0xA222FF);
         //Draw Line
-        filledLineRasterizer.rasterize(x1,y1,x2,y2, Color.YELLOW);
+        polygonRasterizer.rasterize(x1,y1,x2,y2, Color.YELLOW);
         jPanel.repaint();
     }
 
-    public LineDraw(int width, int height){
+    public PolygonDraw(int width, int height){
         JFrame jFrame = new JFrame();
         jFrame.setLayout(new BorderLayout());
         jFrame.setTitle(this.getClass().getName());
@@ -45,7 +56,7 @@ public class LineDraw {
         jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         rasterBufferedImage = new RasterBufferedImage(width, height);
-        filledLineRasterizer = new FilledLineRasterizer(rasterBufferedImage);
+        polygonRasterizer = new PolygonRasterizer(rasterBufferedImage);
         jPanel = new JPanel(){
             private static final long serialVersionUID = 1L;
             @Override
@@ -61,17 +72,22 @@ public class LineDraw {
         jFrame.pack();
         jFrame.setVisible(true);
 
+
         jPanel.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(MouseEvent e) {
+            public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1){
                     if (i) {
                         x1 = e.getX();
                         y1 = e.getY();
+                        model.Point point = new model.Point(x1, y1);
+                        polygon.addPoint(point);
                         i = false;
                     } else {
                         x2 = e.getX();
                         y2 = e.getY();
+                        model.Point point = new model.Point(x2, y2);
+                        polygon.addPoint(point);
                         i = true;
                         draw();
                     }
@@ -80,6 +96,7 @@ public class LineDraw {
             }
         });
 
+        /*Resizable window*/
         jPanel.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -93,13 +110,9 @@ public class LineDraw {
                 newRaster.draw(rasterBufferedImage);
                 rasterBufferedImage = newRaster;
                 filledLineRasterizer = new FilledLineRasterizer(rasterBufferedImage);
-
             }
         });
 
     }
 
-    public void present(Graphics graphics){
-        rasterBufferedImage.repaint(graphics);
-    }
 }
