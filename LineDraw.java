@@ -31,7 +31,7 @@ public class LineDraw {
     }
 
     private void draw(){
-        clear(0xA222FF);
+        //clear(0xA222FF);
         //Draw Line
         filledLineRasterizer.rasterize(x1,y1,x2,y2, Color.YELLOW);
         jPanel.repaint();

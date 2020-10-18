@@ -20,6 +20,7 @@ public class PolygonRasterizer{
             Line line = new Line(firstPoint, secondPoint, 0xff0000);
             lineRasterizer.rasterize(line);
         }
+
     }
 
 }

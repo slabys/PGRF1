@@ -41,7 +41,7 @@ public class PolygonDraw {
         rasterBufferedImage.clear();
     }
 
-    public PolygonDraw(int width, int height){
+    public PolygonDraw(int width, int height) {
         JFrame jFrame = new JFrame();
         jFrame.setLayout(new BorderLayout());
         jFrame.setTitle(this.getClass().getName());
@@ -50,10 +50,11 @@ public class PolygonDraw {
 
         rasterBufferedImage = new RasterBufferedImage(width, height);
         filledLineRasterizer = new FilledLineRasterizer(rasterBufferedImage);
-        jPanel = new JPanel(){
+        jPanel = new JPanel() {
             private static final long serialVersionUID = 1L;
+
             @Override
-            public void paintComponent(Graphics graphics){
+            public void paintComponent(Graphics graphics) {
                 super.paintComponent(graphics);
                 present(graphics);
             }
@@ -69,7 +70,7 @@ public class PolygonDraw {
         jPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getButton() == MouseEvent.BUTTON1){
+                if (e.getButton() == MouseEvent.BUTTON1) {
                     if (i) {
                         x1 = e.getX();
                         y1 = e.getY();
@@ -81,8 +82,9 @@ public class PolygonDraw {
                         y2 = e.getY();
                         model.Point point = new model.Point(x2, y2);
                         polygon.addPoint(point);
-                        i = true;
                         filledLineRasterizer.rasterize(x1, y1, x2, y2, Color.GREEN);
+                        x1 = x2;
+                        y1 = y2;
                     }
                     jPanel.repaint();
                 }
@@ -93,10 +95,10 @@ public class PolygonDraw {
         jPanel.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                if (jPanel.getWidth()<1 || jPanel.getHeight()<1)
+                if (jPanel.getWidth() < 1 || jPanel.getHeight() < 1)
                     return;
-                if (jPanel.getWidth()<=rasterBufferedImage.getWidth()
-                        && jPanel.getHeight()<=rasterBufferedImage.getHeight()) //no resize if new one is smaller
+                if (jPanel.getWidth() <= rasterBufferedImage.getWidth()
+                        && jPanel.getHeight() <= rasterBufferedImage.getHeight()) //no resize if new one is smaller
                     return;
                 RasterBufferedImage newRaster = new RasterBufferedImage(jPanel.getWidth(), jPanel.getHeight());
 
@@ -105,7 +107,5 @@ public class PolygonDraw {
                 filledLineRasterizer = new FilledLineRasterizer(rasterBufferedImage);
             }
         });
-
     }
-
 }
