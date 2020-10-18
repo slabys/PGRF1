@@ -1,14 +1,12 @@
+import model.Point;
+import model.Polygon;
 import rasterize.FilledLineRasterizer;
-import rasterize.LineRasterizer;
 import rasterize.PolygonRasterizer;
 import rasterize.RasterBufferedImage;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 
 public class PolygonDraw {
 
@@ -19,6 +17,8 @@ public class PolygonDraw {
     private model.Polygon polygon = new model.Polygon();
     private int x1,x2,y1,y2;
     private boolean i = true;
+    private model.Point lastPoint;
+    private model.Point firstPoint;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() ->
@@ -50,6 +50,7 @@ public class PolygonDraw {
 
         rasterBufferedImage = new RasterBufferedImage(width, height);
         filledLineRasterizer = new FilledLineRasterizer(rasterBufferedImage);
+        polygonRasterizer = new PolygonRasterizer(filledLineRasterizer);
         jPanel = new JPanel() {
             private static final long serialVersionUID = 1L;
 
@@ -65,6 +66,8 @@ public class PolygonDraw {
         jFrame.add(jPanel, BorderLayout.CENTER);
         jFrame.pack();
         jFrame.setVisible(true);
+        jPanel.requestFocus();
+        jPanel.requestFocusInWindow();
 
 
         jPanel.addMouseListener(new MouseAdapter() {
@@ -82,12 +85,43 @@ public class PolygonDraw {
                         y2 = e.getY();
                         model.Point point = new model.Point(x2, y2);
                         polygon.addPoint(point);
+                        lastPoint = point;
                         filledLineRasterizer.rasterize(x1, y1, x2, y2, Color.GREEN);
                         x1 = x2;
                         y1 = y2;
                     }
                     jPanel.repaint();
                 }
+            }
+        });
+
+        jPanel.addKeyListener(new KeyAdapter() {
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if(e.getKeyCode() == KeyEvent.VK_C){
+                    polygon = new Polygon();
+                    firstPoint = null;
+                    lastPoint = null;
+                    i = true;
+                    clear(0xaaaaaa);
+                    jPanel.repaint();
+                }
+            }
+        });
+
+        jPanel.addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                if(polygon.getPolygonPointList().size() > 1){
+                    clear(0xaaaaaa);
+                    polygonRasterizer.rasterize(polygon);
+                    firstPoint = polygon.getPolygonPointList().get(0);
+                    filledLineRasterizer.rasterize(lastPoint.x, lastPoint.y, e.getX(), e.getY(), Color.YELLOW);
+                    filledLineRasterizer.rasterize(firstPoint.x, firstPoint.y, e.getX(), e.getY(), Color.YELLOW);
+                }
+
+                jPanel.repaint();
             }
         });
 
@@ -105,6 +139,7 @@ public class PolygonDraw {
                 newRaster.draw(rasterBufferedImage);
                 rasterBufferedImage = newRaster;
                 filledLineRasterizer = new FilledLineRasterizer(rasterBufferedImage);
+                polygonRasterizer = new PolygonRasterizer(filledLineRasterizer);
             }
         });
     }
