@@ -31,7 +31,7 @@ public class DashedLineRasterizer extends LineRasterizer{
         sx = (x1 + x2) / 2;
         sy = (y1 + y2) / 2;
 
-        if (i % 15 < 8) {
+        if ((i % 15 < 8) || (i==0)) {
             raster.setPixel(sx, sy, this.color.getRGB());
         }
 

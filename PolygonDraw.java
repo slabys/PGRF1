@@ -1,3 +1,4 @@
+import model.Line;
 import model.Polygon;
 import rasterize.DashedLineRasterizer;
 import rasterize.FilledLineRasterizer;
@@ -7,6 +8,7 @@ import rasterize.RasterBufferedImage;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 
 public class PolygonDraw {
 
@@ -15,7 +17,9 @@ public class PolygonDraw {
     private FilledLineRasterizer filledLineRasterizer;
     private PolygonRasterizer polygonRasterizer;
     private model.Polygon polygon = new model.Polygon();
+    private ArrayList<Line> lines = new ArrayList<>();
     private int x1,x2,y1,y2;
+    private int lx1,lx2,ly1,ly2;
     private boolean i = true;
     private boolean j = true;
     private model.Point lastPoint;
@@ -97,6 +101,21 @@ public class PolygonDraw {
                     }
                     jPanel.repaint();
                 }
+                if (e.getButton() == MouseEvent.BUTTON3) {
+                    if (i) {
+                        lx1 = e.getX();
+                        ly1 = e.getY();
+                        j=false;
+                    } else {
+                        lx2 = e.getX();
+                        ly2 = e.getY();
+                        Line line = new Line(lx1, ly1, lx2, ly2, Color.CYAN.getRGB());
+                        filledLineRasterizer.rasterize(line);
+                        lines.add(line);
+                        j=true;
+                    }
+                    jPanel.repaint();
+                }
             }
         });
 
@@ -106,6 +125,7 @@ public class PolygonDraw {
             public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_C){
                     polygon = new Polygon();
+                    lines = new ArrayList<>();
                     firstPoint = null;
                     lastPoint = null;
                     i = true;
@@ -120,6 +140,7 @@ public class PolygonDraw {
             public void mouseMoved(MouseEvent e) {
                 if(polygon.getPolygonPointList().size() > 1){
                     clear(0xaaaaaa);
+                    filledLineRasterizer.drawMoreLines(lines);
                     polygonRasterizer.rasterize(polygon);
                     firstPoint = polygon.getPolygonPointList().get(0);
                     filledLineRasterizer.rasterize(lastPoint.x, lastPoint.y, e.getX(), e.getY(), Color.YELLOW);

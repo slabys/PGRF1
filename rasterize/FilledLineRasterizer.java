@@ -25,7 +25,7 @@ public class FilledLineRasterizer extends LineRasterizer {
         midpoint(x1, y1, x2, y2);
     }
 
-    public void drawPolygonLines(ArrayList<Line> lines){
+    public void drawMoreLines(ArrayList<Line> lines){
         for(Line line : lines){
             rasterize(line);
         }
