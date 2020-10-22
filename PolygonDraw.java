@@ -1,5 +1,5 @@
-import model.Point;
 import model.Polygon;
+import rasterize.DashedLineRasterizer;
 import rasterize.FilledLineRasterizer;
 import rasterize.PolygonRasterizer;
 import rasterize.RasterBufferedImage;
@@ -17,8 +17,10 @@ public class PolygonDraw {
     private model.Polygon polygon = new model.Polygon();
     private int x1,x2,y1,y2;
     private boolean i = true;
+    private boolean j = true;
     private model.Point lastPoint;
     private model.Point firstPoint;
+    private DashedLineRasterizer dashedLineRasterizer;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() ->
@@ -50,7 +52,10 @@ public class PolygonDraw {
 
         rasterBufferedImage = new RasterBufferedImage(width, height);
         filledLineRasterizer = new FilledLineRasterizer(rasterBufferedImage);
-        polygonRasterizer = new PolygonRasterizer(filledLineRasterizer);
+        dashedLineRasterizer = new DashedLineRasterizer(rasterBufferedImage);
+        //polygonRasterizer = new PolygonRasterizer(filledLineRasterizer);
+        polygonRasterizer = new PolygonRasterizer(dashedLineRasterizer);
+
         jPanel = new JPanel() {
             private static final long serialVersionUID = 1L;
 
@@ -139,7 +144,8 @@ public class PolygonDraw {
                 newRaster.draw(rasterBufferedImage);
                 rasterBufferedImage = newRaster;
                 filledLineRasterizer = new FilledLineRasterizer(rasterBufferedImage);
-                polygonRasterizer = new PolygonRasterizer(filledLineRasterizer);
+                dashedLineRasterizer = new DashedLineRasterizer(rasterBufferedImage);
+                polygonRasterizer = new PolygonRasterizer(dashedLineRasterizer);
             }
         });
     }

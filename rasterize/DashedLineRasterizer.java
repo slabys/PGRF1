@@ -4,21 +4,13 @@ import model.Line;
 
 import java.util.ArrayList;
 
-public class FilledLineRasterizer extends LineRasterizer {
+public class DashedLineRasterizer extends LineRasterizer{
 
-    public FilledLineRasterizer(Raster raster) {
+    private int i = 0;
+
+    public DashedLineRasterizer(Raster raster) {
         super(raster);
     }
-
-    /**
-     *
-     * Využívaný algoritmus pro rastraci úsečky: Midpoint
-     * Definice: Tento algoritmus využívá půlení úseček,
-     * díky kterému najde středové body a dokreslí zbytek úsečky.
-     * Výhody: Jednoduchá implementace, funkční pro všechny kvadranty
-     * Nevýhody: Rekurze
-     *
-     * */
 
     @Override
     public void drawLine(int x1, int y1, int x2, int y2) {
@@ -33,10 +25,15 @@ public class FilledLineRasterizer extends LineRasterizer {
 
     //Midpoint
     private void midpoint(int x1, int y1, int x2, int y2) {
+        i++;
+
         int sx, sy;
         sx = (x1 + x2) / 2;
         sy = (y1 + y2) / 2;
-        raster.setPixel(sx, sy, this.color.getRGB());
+
+        if (i % 15 < 8) {
+            raster.setPixel(sx, sy, this.color.getRGB());
+        }
 
         if (Math.abs(x1 - sx) > 1 || Math.abs(y1 - sy) > 1) {
             midpoint(x1, y1, sx, sy);
@@ -46,4 +43,5 @@ public class FilledLineRasterizer extends LineRasterizer {
             midpoint(sx, sy, x2, y2);
         }
     }
+
 }

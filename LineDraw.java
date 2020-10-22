@@ -1,9 +1,13 @@
+import rasterize.DashedLineRasterizer;
 import rasterize.FilledLineRasterizer;
 import rasterize.RasterBufferedImage;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class LineDraw {
 
@@ -11,6 +15,7 @@ public class LineDraw {
     private RasterBufferedImage rasterBufferedImage;
     private int x1,x2,y1,y2;
     private FilledLineRasterizer filledLineRasterizer;
+    private DashedLineRasterizer dashedLineRasterizer;
     private boolean i = true;
 
     public static void main(String[] args) {
@@ -46,6 +51,7 @@ public class LineDraw {
 
         rasterBufferedImage = new RasterBufferedImage(width, height);
         filledLineRasterizer = new FilledLineRasterizer(rasterBufferedImage);
+        dashedLineRasterizer = new DashedLineRasterizer(rasterBufferedImage);
         jPanel = new JPanel(){
             private static final long serialVersionUID = 1L;
             @Override
