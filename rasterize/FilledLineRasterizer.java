@@ -22,28 +22,28 @@ public class FilledLineRasterizer extends LineRasterizer {
 
     @Override
     public void drawLine(int x1, int y1, int x2, int y2) {
-        midpoint(x1, y1, x2, y2);
+        midpoint(x1, y1, x2, y2, this.color.getRGB());
     }
 
-    public void drawMoreLines(ArrayList<Line> lines){
+    public void rasterize(ArrayList<Line> lines){
         for(Line line : lines){
             rasterize(line);
         }
     }
 
     //Midpoint
-    private void midpoint(int x1, int y1, int x2, int y2) {
+    private void midpoint(int x1, int y1, int x2, int y2, int color) {
         int sx, sy;
         sx = (x1 + x2) / 2;
         sy = (y1 + y2) / 2;
-        raster.setPixel(sx, sy, this.color.getRGB());
+        raster.setPixel(sx, sy, color);
 
         if (Math.abs(x1 - sx) > 1 || Math.abs(y1 - sy) > 1) {
-            midpoint(x1, y1, sx, sy);
+            drawLine(x1, y1, sx, sy);
         }
 
         if (Math.abs(x2 - sx) > 1 || Math.abs(y2 - sy) > 1) {
-            midpoint(sx, sy, x2, y2);
+            drawLine(sx, sy, x2, y2);
         }
     }
 }
