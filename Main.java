@@ -10,7 +10,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 
-public class PolygonDraw {
+public class Main {
 
     private JPanel jPanel;
     private RasterBufferedImage rasterBufferedImage;
@@ -29,7 +29,7 @@ public class PolygonDraw {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() ->
-                new PolygonDraw(800, 600).start()
+                new Main(800, 600).start()
         );
     }
 
@@ -48,7 +48,7 @@ public class PolygonDraw {
         rasterBufferedImage.clear();
     }
 
-    public PolygonDraw(int width, int height) {
+    public Main(int width, int height) {
         JFrame jFrame = new JFrame();
         jFrame.setLayout(new BorderLayout());
         jFrame.setTitle(this.getClass().getName());
@@ -81,7 +81,7 @@ public class PolygonDraw {
 
         jPanel.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mouseReleased(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
                     action = true;
                     if (i) {
@@ -114,9 +114,7 @@ public class PolygonDraw {
                         ly2 = e.getY();
                         Line line = new Line(lx1, ly1, lx2, ly2, Color.CYAN.getRGB());
                         lines.add(line);
-                        System.out.println(lx1 + ", " + ly1 + ", " + lx2 + ", " + ly2);
-                        filledLineRasterizer.rasterize(line);
-
+                        filledLineRasterizer.rasterize(lx1, ly1, lx2, ly2, Color.CYAN);
                         j=true;
                     }
                     jPanel.repaint();
@@ -124,8 +122,8 @@ public class PolygonDraw {
             }
         });
 
+        //Clear window on press key "C"
         jPanel.addKeyListener(new KeyAdapter() {
-
             @Override
             public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_C){
@@ -134,21 +132,22 @@ public class PolygonDraw {
                     firstPoint = null;
                     lastPoint = null;
                     i = true;
+                    j = true;
                     clear(0xaaaaaa);
                     jPanel.repaint();
                 }
             }
         });
 
+        //Mouse move listener repainting all the components
         jPanel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
+                clear(0xaaaaaa);
+                //Redraw single lines
+                filledLineRasterizer.rasterize(lines);
+
                 if(polygon.getPolygonPointList().size() > 1){
-                    clear(0xaaaaaa);
-
-                    //Redraw single lines
-                    filledLineRasterizer.rasterize(lines);
-
                     //Redraw polygon on move
                     polygonRasterizer.rasterize(polygon);
                     // Rasterizing moving lines for polygon
@@ -162,7 +161,7 @@ public class PolygonDraw {
             }
         });
 
-        /*Resizable window*/
+        //Resizable window
         jPanel.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
