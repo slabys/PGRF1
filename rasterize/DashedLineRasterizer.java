@@ -17,12 +17,23 @@ public class DashedLineRasterizer extends LineRasterizer{
         midpoint(x1, y1, x2, y2);
     }
 
-    public void drawPolygonLines(ArrayList<Line> lines){
+    public void rasterize(ArrayList<Line> lines){
         for(Line line : lines){
             rasterize(line);
         }
     }
 
+    /**
+     *  Definice:
+     *      Rozdonutí pro vytvoření Dashed line tímto způsobem jsem se rozhodnul kvůli midpointové rekurzi,
+     *      která znemožňuje přepsání rekurzní podmínky jednoduchým způsobem.
+     *      Kvůli dělení úsečky, vždy na půl, se prvně vykreslují jednotlivé body ve středu, čímž není umožněno
+     *      vykreslení shluku více podů bez nové podmínky.
+     *  Řešení:
+     *      Proměnná "i" si počítá cykly rekurze a podle nich částečně odděluje (vynechává) prostor mezi body.
+     *  Nevýhoda:
+     *      Kvůli zpětnému překreslování nelze zaručit stálost linií s mezerami na stejných místech.
+     */
     //Midpoint
     private void midpoint(int x1, int y1, int x2, int y2) {
         i++;
@@ -31,7 +42,7 @@ public class DashedLineRasterizer extends LineRasterizer{
         sx = (x1 + x2) / 2;
         sy = (y1 + y2) / 2;
 
-        if ((i % 15 < 8) || (i==0)) {
+        if (i % 15 < 8){
             raster.setPixel(sx, sy, this.color.getRGB());
         }
 

@@ -21,7 +21,7 @@ public class FilledLineRasterizer extends LineRasterizer {
      * */
 
     @Override
-    public void drawLine(int x1, int y1, int x2, int y2) {
+    protected void drawLine(int x1, int y1, int x2, int y2) {
         midpoint(x1, y1, x2, y2);
     }
 

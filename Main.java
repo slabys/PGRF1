@@ -1,9 +1,6 @@
 import model.Line;
 import model.Polygon;
-import rasterize.DashedLineRasterizer;
-import rasterize.FilledLineRasterizer;
-import rasterize.PolygonRasterizer;
-import rasterize.RasterBufferedImage;
+import rasterize.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,20 +9,20 @@ import java.util.ArrayList;
 
 public class Main {
 
-    private JPanel jPanel;
+    private final JPanel jPanel;
     private RasterBufferedImage rasterBufferedImage;
     private FilledLineRasterizer filledLineRasterizer;
+    private DashedLineRasterizer dashedLineRasterizer;
+    private DottedLineRasterizer dottedLineRasterizer;
     private PolygonRasterizer polygonRasterizer;
     private model.Polygon polygon = new model.Polygon();
     private ArrayList<Line> lines = new ArrayList<>();
     private int x1,x2,y1,y2;
     private int lx1,lx2,ly1,ly2;
-    private boolean i = true;
-    private boolean j = true;
-    private boolean action = true;
+    private boolean polygonFirst = true;
+    private boolean lineFirst = true;
+    private boolean helpLines = true;
     private model.Point lastPoint;
-    private model.Point firstPoint;
-    private DashedLineRasterizer dashedLineRasterizer;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() ->
@@ -55,10 +52,11 @@ public class Main {
         jFrame.setResizable(true);
         jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
+
+        //RasterBufferedImage
         rasterBufferedImage = new RasterBufferedImage(width, height);
-        filledLineRasterizer = new FilledLineRasterizer(rasterBufferedImage);
-        dashedLineRasterizer = new DashedLineRasterizer(rasterBufferedImage);
-        polygonRasterizer = new PolygonRasterizer(dashedLineRasterizer);
+        //Method for initialing all the rasterizer classes
+        reInit();
 
         jPanel = new JPanel() {
             private static final long serialVersionUID = 1L;
@@ -81,43 +79,20 @@ public class Main {
 
         jPanel.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseReleased(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                    action = true;
-                    if (i) {
-                        x1 = e.getX();
-                        y1 = e.getY();
-                        model.Point point = new model.Point(x1, y1);
-                        polygon.addPoint(point);
-                        i = false;
-                    } else {
-                        x2 = e.getX();
-                        y2 = e.getY();
-                        model.Point point = new model.Point(x2, y2);
-                        polygon.addPoint(point);
-                        lastPoint = point;
-                        filledLineRasterizer.rasterize(x1, y1, x2, y2, Color.GREEN);
-                        x1 = x2;
-                        y1 = y2;
-                    }
-                    jPanel.repaint();
+                    helpLines = true;
+                    polygonDraw(e);
+                }
+
+                if (e.getButton() == MouseEvent.BUTTON2) {
+                    helpLines = false;
+                    polygon.editClosest(e.getX(), e.getY());
                 }
 
                 if (e.getButton() == MouseEvent.BUTTON3) {
-                    action = false;
-                    if (j) {
-                        lx1 = e.getX();
-                        ly1 = e.getY();
-                        j=false;
-                    } else {
-                        lx2 = e.getX();
-                        ly2 = e.getY();
-                        Line line = new Line(lx1, ly1, lx2, ly2, Color.CYAN.getRGB());
-                        lines.add(line);
-                        filledLineRasterizer.rasterize(lx1, ly1, lx2, ly2, Color.CYAN);
-                        j=true;
-                    }
-                    jPanel.repaint();
+                    helpLines = false;
+                    singleLineDraw(e);
                 }
             }
         });
@@ -129,10 +104,9 @@ public class Main {
                 if(e.getKeyCode() == KeyEvent.VK_C){
                     polygon = new Polygon();
                     lines = new ArrayList<>();
-                    firstPoint = null;
                     lastPoint = null;
-                    i = true;
-                    j = true;
+                    helpLines = true;
+                    lineFirst = true;
                     clear(0xaaaaaa);
                     jPanel.repaint();
                 }
@@ -143,21 +117,15 @@ public class Main {
         jPanel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
-                clear(0xaaaaaa);
-                //Redraw single lines
-                filledLineRasterizer.rasterize(lines);
-
+                reDraw();
                 if(polygon.getPolygonPointList().size() > 1){
-                    //Redraw polygon on move
-                    polygonRasterizer.rasterize(polygon);
                     // Rasterizing moving lines for polygon
-                    if(action){
-                        filledLineRasterizer.rasterize(lastPoint.x, lastPoint.y, e.getX(), e.getY(), Color.YELLOW);
-                        filledLineRasterizer.rasterize(polygon.getPolygonPointList().get(0).x,
+                    if(helpLines){
+                        dashedLineRasterizer.rasterize(lastPoint.x, lastPoint.y, e.getX(), e.getY(), Color.YELLOW);
+                        dashedLineRasterizer.rasterize(polygon.getPolygonPointList().get(0).x,
                                 polygon.getPolygonPointList().get(0).y, e.getX(), e.getY(), Color.YELLOW);
                     }
                 }
-                jPanel.repaint();
             }
         });
 
@@ -174,10 +142,57 @@ public class Main {
 
                 newRaster.draw(rasterBufferedImage);
                 rasterBufferedImage = newRaster;
-                filledLineRasterizer = new FilledLineRasterizer(rasterBufferedImage);
-                dashedLineRasterizer = new DashedLineRasterizer(rasterBufferedImage);
-                polygonRasterizer = new PolygonRasterizer(dashedLineRasterizer);
+                reInit();
             }
         });
+    }
+
+    private void reInit() {
+        filledLineRasterizer = new FilledLineRasterizer(rasterBufferedImage);
+        dashedLineRasterizer = new DashedLineRasterizer(rasterBufferedImage);
+        dottedLineRasterizer = new DottedLineRasterizer(rasterBufferedImage);
+        polygonRasterizer = new PolygonRasterizer(filledLineRasterizer);
+    }
+
+    private void singleLineDraw(MouseEvent e) {
+        if (lineFirst) {
+            lx1 = e.getX();
+            ly1 = e.getY();
+            lineFirst=false;
+        } else {
+            lx2 = e.getX();
+            ly2 = e.getY();
+            Line line = new Line(lx1, ly1, lx2, ly2, Color.CYAN.getRGB());
+            lines.add(line);
+            lineFirst=true;
+        }
+    }
+
+    private void polygonDraw(MouseEvent e) {
+        if (polygonFirst) {
+            x1 = e.getX();
+            y1 = e.getY();
+            model.Point point = new model.Point(x1, y1);
+            polygon.addPoint(point);
+            polygonFirst = false;
+        } else {
+            x2 = e.getX();
+            y2 = e.getY();
+            model.Point point = new model.Point(x2, y2);
+            polygon.addPoint(point);
+            lastPoint = point;
+            filledLineRasterizer.rasterize(x1, y1, x2, y2, Color.GREEN);
+            x1 = x2;
+            y1 = y2;
+        }
+    }
+
+    private void reDraw() {
+        clear(0xaaaaaa);
+        //Redraw single lines
+        dottedLineRasterizer.rasterize(lines);
+        //Redraw polygon on move
+        polygonRasterizer.rasterize(polygon);
+        jPanel.repaint();
     }
 }
