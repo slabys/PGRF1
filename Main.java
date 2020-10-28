@@ -36,7 +36,8 @@ public class Main {
 
     public void start() {
         clear(0xaaaaaa);
-        rasterBufferedImage.getGraphics().drawString("Use mouse and try to resize.", 5, 15);
+        rasterBufferedImage.getGraphics().drawString(
+                "Use left, right and middle mouse button and try to resize window.", 5, 15);
         jPanel.repaint();
     }
 
@@ -79,7 +80,7 @@ public class Main {
 
         jPanel.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(MouseEvent e) {
+            public void mouseReleased(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
                     helpLines = true;
                     polygonDraw(e);
@@ -118,13 +119,11 @@ public class Main {
             @Override
             public void mouseMoved(MouseEvent e) {
                 reDraw();
-                if(polygon.getPolygonPointList().size() > 1){
+                if (polygon.getPolygonPointList().size() > 1 && helpLines) {
                     // Rasterizing moving lines for polygon
-                    if(helpLines){
-                        dashedLineRasterizer.rasterize(lastPoint.x, lastPoint.y, e.getX(), e.getY(), Color.YELLOW);
-                        dashedLineRasterizer.rasterize(polygon.getPolygonPointList().get(0).x,
-                                polygon.getPolygonPointList().get(0).y, e.getX(), e.getY(), Color.YELLOW);
-                    }
+                    dashedLineRasterizer.rasterize(lastPoint.x, lastPoint.y, e.getX(), e.getY(), Color.YELLOW);
+                    dashedLineRasterizer.rasterize(polygon.getPolygonPointList().get(0).x,
+                            polygon.getPolygonPointList().get(0).y, e.getX(), e.getY(), Color.YELLOW);
                 }
             }
         });

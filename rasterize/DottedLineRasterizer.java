@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class DottedLineRasterizer extends LineRasterizer{
 
-    private int dotGap = 8;
+    private int dotGap = 5;
 
     public DottedLineRasterizer(Raster raster) {
         super(raster);
