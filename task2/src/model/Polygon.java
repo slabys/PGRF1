@@ -34,12 +34,21 @@ public class Polygon {
     public ArrayList<Line> getEdges(Polygon clipper) {
         ArrayList<Line> edges = new ArrayList<>();
 
-        for (int i = 0; i < clipper.getSize()-1;i++){
-            edges.add(new Line(
-                    clipper.getPolygonPointList().get(i).getX(), clipper.getPolygonPointList().get(i).getY(),
-                    clipper.getPolygonPointList().get(i+1).getX(), clipper.getPolygonPointList().get(i+1).getY(),
-                    clipper.getColor().getRGB()
+        for (int i = 0; i < clipper.getSize();i++){
+            if(i < clipper.getSize()-1){
+                edges.add(new Line(
+                        clipper.getPolygonPointList().get(i).getX(), clipper.getPolygonPointList().get(i).getY(),
+                        clipper.getPolygonPointList().get(i+1).getX(), clipper.getPolygonPointList().get(i+1).getY(),
+                        clipper.getColor().getRGB()
+                ));
+                if(i == clipper.getSize()){
+                    edges.add(new Line(
+                            clipper.getPolygonPointList().get(0).getX(), clipper.getPolygonPointList().get(0).getY(),
+                            clipper.getPolygonPointList().get(i).getX(), clipper.getPolygonPointList().get(i).getY(),
+                            clipper.getColor().getRGB()
                     ));
+                }
+            }
         }
         return edges;
     }
@@ -72,5 +81,9 @@ public class Polygon {
             editPoint.setY(y);
             edit = true;
         }
+    }
+
+    public void clear(Polygon result) {
+        result.getPolygonPointList().clear();
     }
 }

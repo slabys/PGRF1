@@ -39,6 +39,13 @@ public class ScanLine implements Filler {
         int yMin = Integer.MAX_VALUE, yMax = Integer.MIN_VALUE;
 
         for (int i = 0; i < polygon.getSize() - 1; i++) {
+            if(i == polygon.getSize()-1){
+                Line line = new Line(
+                        polygon.getPolygonPointList().get(0),
+                        polygon.getPolygonPointList().get((i)),
+                        fillColor.getRGB()
+                );
+            }
             Line line = new Line(
                     polygon.getPolygonPointList().get(i),
                     polygon.getPolygonPointList().get((i + 1)),
@@ -47,10 +54,11 @@ public class ScanLine implements Filler {
             //Horizontal line delete
             if (!line.isHorizontal()) {
                 //Set orientation to one side and add it to lines
-                lines.add(line.setOrientation());
+                Line l = line.setOrientation();
+                lines.add(l);
                 //Update yMax and yMin
-                if (yMin > line.getY1()) yMin = line.getY1();
-                if (yMax < line.getY2()) yMax = line.getY2();
+                if (yMin > l.getY2()) yMin = l.getY2();
+                if (yMax < l.getY1()) yMax = l.getY1();
             }
         }
 

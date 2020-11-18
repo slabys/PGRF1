@@ -27,10 +27,10 @@ public class SeedFill implements Filler {
 
     @Override
     public void fill() {
-        seedFill(seed, fillColor, backgroundColor);
+        seedFill(seed);
     }
 
-    private void seedFill(Point seed, int fillColor, int backgroundColor){
+    private void seedFill(Point seed){
         if (seed.getX() >= 0 && seed.getY() >= 0 &&
                 seed.getX() < raster.getWidth() && seed.getY() < raster.getHeight()) {
 
@@ -38,11 +38,10 @@ public class SeedFill implements Filler {
 
                 raster.setPixel(seed.getX(), seed.getY(), patterFill.paint(seed.getX(), seed.getY(), pattern));
 
-
-                seedFill(new Point(seed.getX() + 1, seed.getY()), fillColor, backgroundColor);
-                seedFill(new Point(seed.getX() - 1, seed.getY()), fillColor, backgroundColor);
-                seedFill(new Point(seed.getX(), seed.getY() + 1), fillColor, backgroundColor);
-                seedFill(new Point(seed.getX(), seed.getY() - 1), fillColor, backgroundColor);
+                seedFill(new Point(seed.getX() + 1, seed.getY()));
+                seedFill(new Point(seed.getX() - 1, seed.getY()));
+                seedFill(new Point(seed.getX(), seed.getY() + 1));
+                seedFill(new Point(seed.getX(), seed.getY() - 1));
             }
         }
     }

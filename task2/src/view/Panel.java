@@ -50,6 +50,7 @@ public class Panel extends JPanel {
             @Override
             public void run() {
                 repaint();
+                raster.getGraphics().drawString("Press \"F1\" for help!", getX()+5, getY()+15);
             }
         }, 0, FPS);
     }

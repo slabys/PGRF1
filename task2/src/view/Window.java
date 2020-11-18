@@ -9,7 +9,7 @@ public class Window extends JFrame {
 
     public Window() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setTitle("UHK FIM PGRF : " + this.getClass().getName());
+        setTitle("TASK2 - slabysi1");
 
 
         panel = new Panel();

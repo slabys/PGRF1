@@ -18,8 +18,10 @@ public class PatterFill implements PatternFill {
             case NewMethod -> {
                 return newMethod(x, y);
             }
+            default -> {
+                return Color.BLACK.getRGB();
+            }
         }
-        return Color.BLACK.getRGB();
     }
 
     private int newMethod(int x, int y) {
@@ -30,8 +32,8 @@ public class PatterFill implements PatternFill {
     }
 
     private int chess(int x, int y) {
-        if ((x + y) % 2 == 0) {
-            return 0x000000;
+        if ((x % 2) == 0) {
+            return 0xff;
         } else {
             return 0xFFFFFF;
         }
@@ -43,6 +45,6 @@ public class PatterFill implements PatternFill {
         if (Math.sqrt(sx * sx + sy * sy) < radius) {
             return 0xffddcc;
         }
-        return sx;
+        return 0xffffff;
     }
 }

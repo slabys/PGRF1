@@ -1,9 +1,10 @@
 package control;
 
 import clip.Clipper;
-import fill.PatterFill;
+import fill.PatternFill;
 import fill.ScanLine;
 import fill.SeedFill;
+import fill.SeedFillBorder;
 import model.Line;
 import model.Point;
 import model.Polygon;
@@ -16,6 +17,10 @@ import view.Panel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static javax.swing.JOptionPane.PLAIN_MESSAGE;
 
 public class Controller2D implements Controller {
 
@@ -29,7 +34,9 @@ public class Controller2D implements Controller {
     private LineRasterizer lineRasterizer;
     private PolygonRasterizer polygonRasterizer;
     private SeedFill seedFill;
+    private SeedFillBorder seedFillBorder;
     private ScanLine scanLine;
+    private int patternFillHelp = 0;
 
     private Polygon polygon = new Polygon();
     private Polygon clipper = new Polygon();
@@ -44,8 +51,22 @@ public class Controller2D implements Controller {
         lineRasterizer = new LineRasterizerGraphics(raster);
         polygonRasterizer = new PolygonRasterizer(lineRasterizer);
         seedFill = new SeedFill(raster);
+        seedFillBorder = new SeedFillBorder(raster);
         scanLine = new ScanLine(lineRasterizer);
-        setColors();
+
+        //init Colors
+        setColorsPatterns();
+
+    }
+
+    private void setColorsPatterns() {
+        seedFill.setPatter(PatternFill.Patterns.Chess);
+        seedFillBorder.setFillColor(Color.BLUE.getRGB());
+        scanLine.setFillColor(Color.MAGENTA);
+        polygon.setColor(Color.RED);
+        clipper.setColor(Color.PINK);
+        seedFillBorder.setBorderColorOne(polygon.getColor().getRGB());
+        seedFillBorder.setBorderColorTwo(clipper.getColor().getRGB());
     }
 
     @Override
@@ -71,33 +92,32 @@ public class Controller2D implements Controller {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (e.isControlDown()) {
-                    return;
-                }
+                    if (SwingUtilities.isRightMouseButton(e)) { //SeedFillBorder
+                        update();
+                        seedFillBorder.setSeed(new Point(e.getX(), e.getY()));
+                        seedFillBorder.fill();
+                    }
+                } else {
 
-                if (e.isShiftDown()) {
-                    //TODO
-                } else if (SwingUtilities.isLeftMouseButton(e)) {
-                    //TODO
-                } else if (SwingUtilities.isMiddleMouseButton(e)) { //Edit closest polygon point
-                    polygon.editClosest(e.getX(), e.getY());
-                    update();
-                } else if (SwingUtilities.isRightMouseButton(e)) { //SeedFill
-                    update();
-                    seedFill.setSeed(new Point(e.getX(), e.getY()));
-                    seedFill.fill();
+                    if (e.isShiftDown()) {
+                        //TODO
+                    } else if (SwingUtilities.isLeftMouseButton(e)) {
+                        //TODO
+                    } else if (SwingUtilities.isMiddleMouseButton(e)) { //Edit closest polygon point
+                        polygon.editClosest(e.getX(), e.getY());
+                        update();
+                    } else if (SwingUtilities.isRightMouseButton(e)) { //SeedFill
+                        update();
+                        seedFill.setSeed(new Point(e.getX(), e.getY()));
+                        seedFill.fill();
+                    }
                 }
             }
 
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.isControlDown()) {
-                    if (SwingUtilities.isLeftMouseButton(e)) {
-                        //TODO
-                    } else if (SwingUtilities.isMiddleMouseButton(e)) {
-                        //TODO
-                    } else if (SwingUtilities.isRightMouseButton(e)) {
-                        //TODO
-                    }
+                    return;
                 }
 
                 if (e.isShiftDown()) {
@@ -106,10 +126,11 @@ public class Controller2D implements Controller {
                         update();
                     } else if (SwingUtilities.isRightMouseButton(e)) {
                         update();
-                        clipper.addPoint(clipper.getPolygonPointList().get(0));
-                        scanLine.setPolygon(Clipper.clip(polygon, clipper));
+                        Polygon p = Clipper.clip(polygon, clipper);
+                        p.setColor(Color.orange);
+                        polygonRasterizer.rasterize(p);
+                        scanLine.setPolygon(p);
                         scanLine.fill();
-                        clipper.getPolygonPointList().remove(clipper.getSize() - 1);
                     }
                 }
             }
@@ -157,6 +178,26 @@ public class Controller2D implements Controller {
                 if (e.getKeyCode() == KeyEvent.VK_C) {
                     hardClear();
                 }
+                if (e.getKeyCode() == KeyEvent.VK_P) {
+                    changePattern();
+                }
+                if (e.getKeyCode() == KeyEvent.VK_F1) {
+                    JFrame frame = new JFrame();
+                    List<Label> labelList = new ArrayList<>();
+                    Label label = new Label("C - Clear all \n" +
+                            "P - Change SeedFill pattern \n" +
+                            "\n" +
+                            "LMB (Holding/Releasing) - Drawing polygon lines / Set polygon point \n" +
+                            "MMB - Edit polygon points \n" +
+                            "RMB - SeedFill with pattern \n" +
+                            "\n" +
+                            "Shift + LMB (Holding/Releasing) - Drawing clipper lines / Set clipper point \n" +
+                            "Shift + MMB - Edit clipper points \n" +
+                            "Shift + RMB - Activates ScanLine between Clipper and Polygon \n" +
+                            "Ctrl + RMB - SeedFillBorder filling inner area with color \n"
+                    );
+                    JOptionPane.showMessageDialog(frame, "Tips:\n" + label.getText(), "Help", PLAIN_MESSAGE);
+                }
             }
         });
 
@@ -167,6 +208,22 @@ public class Controller2D implements Controller {
                 initObjects(panel.getRaster());
             }
         });
+    }
+
+    private void changePattern() {
+        PatternFill.Patterns[] patternsList = PatternFill.Patterns.values();
+        switch (patternsList[patternFillHelp % PatternFill.Patterns.values().length]) {
+            case Chess -> {
+                seedFill.setPatter(PatternFill.Patterns.Chess);
+            }
+            case Circle -> {
+                seedFill.setPatter(PatternFill.Patterns.Circle);
+            }
+            case NewMethod -> {
+                seedFill.setPatter(PatternFill.Patterns.NewMethod);
+            }
+        }
+        patternFillHelp++;
     }
 
     private void polygonDraw(int x, int y) {
@@ -207,25 +264,16 @@ public class Controller2D implements Controller {
         polygonRasterizer.rasterize(polygon);
         polygonRasterizer.rasterize(clipper);
         panel.repaint();
+        setColorsPatterns();
     }
 
     private void hardClear() {
         panel.clear();
         polygon = new Polygon();
         clipper = new Polygon();
-        setColors();
         firstPoint = null;
         lastPoint = null;
         firstAction = true;
         firstActionClipper = true;
     }
-
-    private void setColors() {
-        //Setting colors
-        seedFill.setPatter(PatterFill.Patterns.NewMethod);
-        scanLine.setFillColor(Color.BLUE);
-        polygon.setColor(Color.RED);
-        clipper.setColor(Color.PINK);
-    }
-
 }
