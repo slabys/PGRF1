@@ -10,20 +10,22 @@ public class Clipper {
         Polygon result = new Polygon();
 
         for (Line edge : clipPolygon.getEdges(clipPolygon)) {
-            result.clear(result);
-            Point v1 = polygon.getPolygonPointList().get(polygon.getSize() - 1);
-            for (Point v2 : polygon.getPolygonPointList()) {
-                if (isInside(v2, edge)) {
-                    if (!isInside(v1, edge)) {
-                        result.addPoint(intersection(v1, v2, edge));
+            if(polygon.getSize() > 0 ) {
+                result = new Polygon();
+                Point v1 = polygon.getPolygonPointList().get(polygon.getSize() - 1);
+                for (Point v2 : polygon.getPolygonPointList()) {
+                    if (isInside(v2, edge)) {
+                        if (!isInside(v1, edge)) {
+                            result.addPoint(intersection(v1, v2, edge));
+                        }
+                        result.addPoint(v2);
+                    }  else {
+                        if (isInside(v1, edge)) result.addPoint(intersection(v1, v2, edge));
                     }
-                    result.addPoint(v2);
-                } else {
-                    if (isInside(v1, edge)) result.addPoint(intersection(v1, v2, edge));
+                    v1 = v2;
                 }
-                v1 = v2;
+                polygon = result;
             }
-
         }
         return result;
     }

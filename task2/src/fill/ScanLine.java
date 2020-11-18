@@ -38,19 +38,14 @@ public class ScanLine implements Filler {
         List<Integer> intersections = new ArrayList<>();
         int yMin = Integer.MAX_VALUE, yMax = Integer.MIN_VALUE;
 
-        for (int i = 0; i < polygon.getSize() - 1; i++) {
-            if(i == polygon.getSize()-1){
-                Line line = new Line(
-                        polygon.getPolygonPointList().get(0),
-                        polygon.getPolygonPointList().get((i)),
-                        fillColor.getRGB()
-                );
-            }
+        for (int i = 0; i < polygon.getSize(); i++) {
+
             Line line = new Line(
                     polygon.getPolygonPointList().get(i),
-                    polygon.getPolygonPointList().get((i + 1)),
+                    polygon.getPolygonPointList().get((i + 1)%polygon.getSize()),
                     fillColor.getRGB()
             );
+
             //Horizontal line delete
             if (!line.isHorizontal()) {
                 //Set orientation to one side and add it to lines

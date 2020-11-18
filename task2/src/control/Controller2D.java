@@ -127,7 +127,7 @@ public class Controller2D implements Controller {
                     } else if (SwingUtilities.isRightMouseButton(e)) {
                         update();
                         Polygon p = Clipper.clip(polygon, clipper);
-                        p.setColor(Color.orange);
+                        p.setColor(Color.blue);
                         polygonRasterizer.rasterize(p);
                         scanLine.setPolygon(p);
                         scanLine.fill();
@@ -181,10 +181,14 @@ public class Controller2D implements Controller {
                 if (e.getKeyCode() == KeyEvent.VK_P) {
                     changePattern();
                 }
+                if (e.getKeyCode() == KeyEvent.VK_R) {
+                    changeColorOnShape();
+                }
                 if (e.getKeyCode() == KeyEvent.VK_F1) {
                     JFrame frame = new JFrame();
                     List<Label> labelList = new ArrayList<>();
                     Label label = new Label("C - Clear all \n" +
+                            "R - Change colors for different objects \n" +
                             "P - Change SeedFill pattern \n" +
                             "\n" +
                             "LMB (Holding/Releasing) - Drawing polygon lines / Set polygon point \n" +
@@ -208,6 +212,39 @@ public class Controller2D implements Controller {
                 initObjects(panel.getRaster());
             }
         });
+    }
+
+    private void changeColorOnShape() {
+        Object object = JOptionPane.showInputDialog(null,
+                "What color should I change?",
+                "Color change.", JOptionPane.QUESTION_MESSAGE,
+                null,
+                new String[]{"Polygon", "Clipper", "Scanline", "SeedFillBorder"},
+                "Polygon");
+
+        if(object != null){
+            Color color = JColorChooser.showDialog(panel, "Select color", Color.RED);
+
+            switch (object.toString()){
+                case "Polygon":
+                    polygon.setColor(color);
+                    seedFillBorder.setBorderColorOne(color.getRGB());
+                    break;
+                case "Clipper":
+                    clipper.setColor(color);
+                    seedFillBorder.setBorderColorTwo(color.getRGB());
+                    break;
+                case "Scanline":
+                    scanLine.setFillColor(color);
+                    break;
+                case "SeedFillBorder":
+                    seedFillBorder.setFillColor(color.getRGB());
+                    break;
+                default:
+                    break;
+            }
+        }
+        update();
     }
 
     private void changePattern() {
@@ -264,7 +301,6 @@ public class Controller2D implements Controller {
         polygonRasterizer.rasterize(polygon);
         polygonRasterizer.rasterize(clipper);
         panel.repaint();
-        setColorsPatterns();
     }
 
     private void hardClear() {

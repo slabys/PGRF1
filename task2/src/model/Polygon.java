@@ -34,21 +34,13 @@ public class Polygon {
     public ArrayList<Line> getEdges(Polygon clipper) {
         ArrayList<Line> edges = new ArrayList<>();
 
-        for (int i = 0; i < clipper.getSize();i++){
-            if(i < clipper.getSize()-1){
-                edges.add(new Line(
-                        clipper.getPolygonPointList().get(i).getX(), clipper.getPolygonPointList().get(i).getY(),
-                        clipper.getPolygonPointList().get(i+1).getX(), clipper.getPolygonPointList().get(i+1).getY(),
-                        clipper.getColor().getRGB()
-                ));
-                if(i == clipper.getSize()){
-                    edges.add(new Line(
-                            clipper.getPolygonPointList().get(0).getX(), clipper.getPolygonPointList().get(0).getY(),
-                            clipper.getPolygonPointList().get(i).getX(), clipper.getPolygonPointList().get(i).getY(),
-                            clipper.getColor().getRGB()
-                    ));
-                }
-            }
+        for (int i = 0; i < clipper.getSize(); i++) {
+            edges.add(new Line(
+                    clipper.getPolygonPointList().get(i).getX(), clipper.getPolygonPointList().get(i).getY(),
+                    clipper.getPolygonPointList().get((i + 1) % clipper.getSize()).getX(),
+                    clipper.getPolygonPointList().get((i + 1) % clipper.getSize()).getY(),
+                    clipper.getColor().getRGB()
+            ));
         }
         return edges;
     }
@@ -57,18 +49,18 @@ public class Polygon {
         this.polygonPointList = polygonPointList;
     }
 
-    public int getSize(){
+    public int getSize() {
         return polygonPointList.size();
     }
 
-    public void addPoint(Point point){
+    public void addPoint(Point point) {
         polygonPointList.add(point);
     }
 
-    public void editClosest(int x, int y){
+    public void editClosest(int x, int y) {
 
         double prev = Double.MAX_VALUE;
-        if(polygonPointList.size() > 0 && edit){
+        if (polygonPointList.size() > 0 && edit) {
             for (model.Point pointTmp : polygonPointList) {
                 if (pointTmp.getDistance(x, y) < prev) {
                     prev = pointTmp.getDistance(x, y);
@@ -76,14 +68,10 @@ public class Polygon {
                 }
             }
             edit = false;
-        }else{
+        } else {
             editPoint.setX(x);
             editPoint.setY(y);
             edit = true;
         }
-    }
-
-    public void clear(Polygon result) {
-        result.getPolygonPointList().clear();
     }
 }
