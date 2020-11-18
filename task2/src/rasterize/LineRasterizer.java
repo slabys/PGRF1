@@ -26,8 +26,8 @@ public abstract class LineRasterizer {
         drawLine(line.getX1(), line.getY1(), line.getX2(), line.getY2());
     }
 
-    public void rasterize(Point p1, Point p2) {
-        setColor(Color.PINK);
+    public void rasterize(Point p1, Point p2, Color color) {
+        setColor(color);
         drawLine(p1.getX(), p1.getY(), p2.getX(), p2.getY());
     }
 

@@ -18,7 +18,7 @@ public class PolygonRasterizer{
             if(polygon.getPolygonPointList().size() > i+1){
                 Point firstPoint = polygon.getPolygonPointList().get(i);
                 Point secondPoint = polygon.getPolygonPointList().get(i+1);
-                Line line = new Line(firstPoint, secondPoint, 0xff0000);
+                Line line = new Line(firstPoint, secondPoint, polygon.getColor().getRGB());
                 lineRasterizer.rasterize(line);
             }
         }
@@ -26,7 +26,7 @@ public class PolygonRasterizer{
             model.Line line = new model.Line(
                     polygon.getPolygonPointList().get(0),
                     polygon.getPolygonPointList().get(polygon.getPolygonPointList().size()-1),
-                    0xff0000);
+                    polygon.getColor().getRGB());
             lineRasterizer.rasterize(line);
         }
     }

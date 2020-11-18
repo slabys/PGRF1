@@ -2,6 +2,10 @@ package fill;
 
 public interface PatternFill {
 
-    int paint(int x, int y);
+    enum Patterns {
+        Chess, Circle, NewMethod
+    }
+
+    int paint(int x, int y, PatterFill.Patterns patterns);
 
 }

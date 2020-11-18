@@ -7,7 +7,6 @@ import rasterize.LineRasterizer;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ScanLine implements Filler {
@@ -17,9 +16,17 @@ public class ScanLine implements Filler {
     }
 
     private Polygon polygon;
-    private Color fillColor = Color.GREEN; //naplnit setrem, nebo soucasti polygonu
-    private int borderColor; //naplnit setrem, nebo soucasti polygonu
-    //private Raster raster; //nebo LineRasterizer, plneni konstruktorem
+    private Color fillColor;
+
+    public Color getFillColor() {
+        return fillColor;
+    }
+
+    public void setFillColor(Color fillColor) {
+        this.fillColor = fillColor;
+    }
+
+    private int borderColor;
     private LineRasterizer lineRasterizer;
 
     public ScanLine(LineRasterizer lineRasterizer) {
@@ -35,17 +42,16 @@ public class ScanLine implements Filler {
             Line line = new Line(
                     polygon.getPolygonPointList().get(i),
                     polygon.getPolygonPointList().get((i + 1)),
-                    0xff0000
+                    fillColor.getRGB()
             );
             //Horizontal line delete
             if (!line.isHorizontal()) {
                 //Set orientation to one side and add it to lines
                 lines.add(line.setOrientation());
-                //Uptade yMax and yMin
+                //Update yMax and yMin
                 if (yMin > line.getY1()) yMin = line.getY1();
                 if (yMax < line.getY2()) yMax = line.getY2();
             }
-
         }
 
         for (int y = yMin; y < yMax; y++) {
@@ -58,9 +64,8 @@ public class ScanLine implements Filler {
                 }
             }
 
-            Collections.sort(intersections);
             //sort intersection by InsertionSort
-            //intersections = insertionSort(intersections);
+            intersections = insertionSort(intersections);
 
             for (int i = 0; i < intersections.size(); i += 2) {
                 if (intersections.size() > i + 1) {

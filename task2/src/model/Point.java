@@ -31,6 +31,6 @@ public class Point {
     }
 
     public double getDistance(int ex, int ey) {
-        return Math.sqrt(Math.pow(ex-x, 2)+Math.pow(ey-y, 2));
+        return Math.sqrt(Math.pow(ex - x, 2) + Math.pow(ey - y, 2));
     }
 }

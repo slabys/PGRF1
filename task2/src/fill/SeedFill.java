@@ -9,7 +9,8 @@ public class SeedFill implements Filler {
     private Point seed;
     private int fillColor = 0xffff00;
     private int backgroundColor = 0x000000;
-    private PatterFillChess pattern = new PatterFillChess();
+    private PatterFill patterFill = new PatterFill();
+    private PatterFill.Patterns pattern;
 
     public Point getSeed() {
         return seed;
@@ -35,7 +36,7 @@ public class SeedFill implements Filler {
 
             if (raster.getPixel(seed.getX(), seed.getY()) == backgroundColor) {
 
-                raster.setPixel(seed.getX(), seed.getY(), 0xFFddcc);
+                raster.setPixel(seed.getX(), seed.getY(), patterFill.paint(seed.getX(), seed.getY(), pattern));
 
 
                 seedFill(new Point(seed.getX() + 1, seed.getY()), fillColor, backgroundColor);
@@ -44,5 +45,9 @@ public class SeedFill implements Filler {
                 seedFill(new Point(seed.getX(), seed.getY() - 1), fillColor, backgroundColor);
             }
         }
+    }
+
+    public void setPatter(PatterFill.Patterns pattern) {
+        this.pattern = pattern;
     }
 }
