@@ -5,6 +5,7 @@ import rasterize.Raster;
 import render.Renderer;
 import solids.Axis;
 import solids.Cube;
+import solids.Circle;
 import solids.Tetrahedron;
 import transforms.Camera;
 import transforms.Mat4RotXYZ;
@@ -20,11 +21,13 @@ public class Controller3D implements Controller {
 
     private LineRasterizerGraphics lineRasterizer;
 
-    private Axis xAxis = new Axis(Axis.Axises.XAxis);
-    private Axis yAxis = new Axis(Axis.Axises.YAxis);
-    private Axis zAxis = new Axis(Axis.Axises.ZAxis);
+    private Axis xAxis = new Axis(Axis.Axises.XAxis, Color.RED);
+    private Axis yAxis = new Axis(Axis.Axises.YAxis, Color.GREEN);
+    private Axis zAxis = new Axis(Axis.Axises.ZAxis, Color.BLUE);
     private Tetrahedron tetrahedron = new Tetrahedron();
     private Cube cube = new Cube(1,1,1,4);
+    private Circle circle = new Circle();
+
     private Renderer renderer;
     private double zInc = 0;
     private Camera cameraView = new Camera().withPosition(new Vec3D(-5, 0, 0));
@@ -44,12 +47,9 @@ public class Controller3D implements Controller {
         panel.requestFocus();
         panel.requestFocusInWindow();
 
-        xAxis.setColor(Color.RED);
-        yAxis.setColor(Color.GREEN);
-        zAxis.setColor(Color.BLUE);
-
         tetrahedron.setColor(Color.CYAN);
         cube.setColor(Color.MAGENTA);
+        circle.setColor(Color.orange);
     }
 
     @Override
@@ -57,10 +57,12 @@ public class Controller3D implements Controller {
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
+                System.out.println("aaa");
                 cameraView = cameraView.addAzimuth(Math.PI * (float)(xPrev - e.getX()) / (float)panel.getWidth());
-                cameraView = cameraView.addRadius(Math.PI * (float)(e.getY() - yPrev) / (float)panel.getHeight());
+                cameraView = cameraView.addZenith(Math.PI * (float)(e.getY() - yPrev) / (float)panel.getHeight());
                 xPrev = e.getX();
                 yPrev = e.getY();
+                System.out.println(cameraView);
                 update();
             }
         });
@@ -74,7 +76,8 @@ public class Controller3D implements Controller {
                 }
                 if(e.getKeyCode() == KeyEvent.VK_P){
                     zInc += 0.1;
-                    renderer.setModel(new Mat4RotXYZ(Math.PI/3, Math.PI/4, zInc*Math.PI/5));
+                    renderer.setModel(new Mat4RotXYZ(Math.PI / 2, Math.PI / 3, zInc+Math.PI / 4));
+                    //renderer.setModel(new Mat4RotXYZ(Math.PI/3, Math.PI/4, zInc*Math.PI/5));
                 }
                 if(e.getKeyCode() == KeyEvent.VK_W) {
                     cameraView = cameraView.forward(0.1) ;
@@ -108,16 +111,14 @@ public class Controller3D implements Controller {
     private void update() {
         panel.clear();
 
-        /*Line line = new Line(10, 50, 100, 100, 0xff0000);
-        lineRasterizer.rasterize(line);*/
-
-
         renderer.render(xAxis);
         renderer.render(yAxis);
         renderer.render(zAxis);
 
         renderer.render(tetrahedron);
         renderer.render(cube);
+        renderer.render(circle);
+
         renderer.setView(cameraView.getViewMatrix());
     }
 

@@ -7,7 +7,7 @@ import java.util.List;
 public class Solid {
     private List<Vertex> vertices = new ArrayList<>();
     private List<Integer> indicies = new ArrayList<>();
-    private Color color = Color.RED;
+    private Color color = new Color(Color.RED.getRGB());
 
     public Color getColor() {
         return color;

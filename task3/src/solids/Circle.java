@@ -3,9 +3,10 @@ package solids;
 import model.Solid;
 import model.Vertex;
 
-public class Sphere extends Solid {
-    public Sphere() {
+public class Circle extends Solid {
+    public Circle() {
         super();
+
         for (int i = 0; i < 36; i++) {
             getVertices().add(
                     new Vertex(

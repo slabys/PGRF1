@@ -3,6 +3,8 @@ package solids;
 import model.Solid;
 import model.Vertex;
 
+import java.awt.*;
+
 public class Axis extends Solid {
 
     public enum Axises {
@@ -10,18 +12,20 @@ public class Axis extends Solid {
         YAxis(0,10,0),
         ZAxis(0,0,10);
 
-        public final int x, y, z;
+        public final float x, y, z;
 
-        Axises(int x, int y, int z) {
+        Axises(float x, float y, float z) {
             this.x = x;
             this.y = y;
             this.z = z;
         }
     }
 
-    public Axis(Axises axisType){
+    public Axis(Axises axisType, Color color){
         super();
-        //TODO
+
+        setColor(color);
+
         switch (axisType) {
             case XAxis -> {
                 getVertices().add(new Vertex(0, 0,0));

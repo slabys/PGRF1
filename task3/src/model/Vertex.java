@@ -9,7 +9,6 @@ import java.util.Optional;
 public class Vertex {
 
     final private Point3D position;
-    //color
 
     public Vertex(double x, double y, double z){
         position = new Point3D(x, y, z);

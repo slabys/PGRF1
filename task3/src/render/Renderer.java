@@ -16,12 +16,13 @@ public class Renderer {
     //Pipeline Implementation
     private Raster raster;
     private LineRasterizer lineRasterizer;
-    private Mat4 model = new Mat4RotXYZ(Math.PI / 3, Math.PI / 4, Math.PI / 5);
+    private Mat4 model = new Mat4RotXYZ(Math.PI / 2, Math.PI / 3, Math.PI / 4);
     private Mat4 view = new Mat4ViewRH(
-            new Vec3D(10, 10, 10),
+            new Vec3D(1, 1, 1),
             new Vec3D(-1, -1, -1),
             new Vec3D(0, 1, 1));
-    private Mat4 projection = new Mat4PerspRH(Math.PI / 4, 1, 0.1, 10);
+    private Mat4 projection = new Mat4PerspRH(Math.PI / 2, 1, 0.1, 10);
+    private Color color = Color.YELLOW;
 
     public Mat4 getView() {
         return view;
@@ -52,6 +53,7 @@ public class Renderer {
 
     public void render(Solid solid) {
         Mat4 mat = model.mul(view).mul(projection);
+        color = solid.getColor();
 
         List<Vertex> tempVertices = new ArrayList<>();
         for (Vertex vx : solid.getVertices()) {
@@ -69,20 +71,19 @@ public class Renderer {
         }
     }
 
-    private void renderEdge(Vertex vertexA, Vertex vertexB) {
+    private void renderEdge(Vertex a, Vertex b) {
 
-        if(!vertexA.dehomog().isPresent() ||
-                !vertexB.dehomog().isPresent()) return;
-        if(!vertexA.isInView() && !vertexB.isInView()) return;
+        if(!a.dehomog().isPresent() || !b.dehomog().isPresent()) return;
+        if(a.isInView() && b.isInView()){
+            final Vec3D vecA = a.dehomog().get();
+            final Vec3D vecB = b.dehomog().get();
 
-        Vec3D vecA = vertexA.dehomog().get();
-        Vec3D vecB = vertexA.dehomog().get();
+            int x1 = (int) ((vecA.getX() + 1) * (raster.getWidth() - 1) / 2);
+            int x2 = (int) ((vecB.getX() + 1) * (raster.getWidth() - 1) / 2);
+            int y1 = (int) ((1 - vecA.getY()) * (raster.getHeight() - 1) / 2);
+            int y2 = (int) ((1 - vecB.getY()) * (raster.getHeight() - 1) / 2);
 
-        int x1 = (int) ((vecA.getX() + 1) * (raster.getWidth() - 1) / 2);
-        int y1 = (int) ((1 - vecA.getY()) * (raster.getHeight() - 1) / 2);
-        int x2 = (int) ((vecB.getX() + 1) * (raster.getWidth() - 1) / 2);
-        int y2 = (int) ((1 - vecB.getY()) * (raster.getHeight() - 1) / 2);
-
-        lineRasterizer.rasterize(x1, y1, x2, y2, Color.YELLOW);
+            lineRasterizer.rasterize(x1, y1, x2, y2, color);
+        }
     }
 }
