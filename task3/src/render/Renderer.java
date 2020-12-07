@@ -17,14 +17,13 @@ public class Renderer {
     private Raster raster;
     private LineRasterizer lineRasterizer;
 
-    private Mat4 model = new Mat4RotXYZ(
-            0, 0, 0);
+    private Mat4 model = new Mat4RotXYZ(Math.PI / 2, Math.PI / 3, Math.PI / 4);
     private Mat4 view = new Mat4ViewRH(
-            new Vec3D(0, 0, 0),
-            new Vec3D(1, 0, 0),
-            new Vec3D(0, 0, 0));
+            new Vec3D(1, 1, 1),
+            new Vec3D(-1, -1, -1),
+            new Vec3D(0, 1, 1));
     private Mat4 projection = new Mat4PerspRH(
-            Math.PI / 6, 1, 0, 100);
+            Math.PI / 2, 1, 0, 10);
 
     private Color color = Color.YELLOW;
 
@@ -56,7 +55,14 @@ public class Renderer {
     }
 
     public void render(Solid solid) {
-        Mat4 mat = model.mul(view).mul(projection);
+        Mat4 mat;
+
+        if(solid.getClass().getName().equals("solids.Axis")){
+            mat = view.mul(projection);
+        }else{
+            mat = model.mul(view).mul(projection);
+        }
+
         color = solid.getColor();
 
         List<Vertex> tempVertices = new ArrayList<>();

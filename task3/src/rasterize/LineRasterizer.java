@@ -1,6 +1,7 @@
 package rasterize;
 
 import model.Line;
+import solids.Axis;
 
 import java.awt.*;
 
@@ -23,6 +24,16 @@ public abstract class LineRasterizer {
     public void rasterize(Line line) {
         setColor(line.getColor());
         drawLine(line.getX1(), line.getY1(), line.getX2(), line.getY2());
+    }
+
+    public void rasterize(Axis axis) {
+        setColor(axis.getColor());
+        drawLine(
+                (int)axis.getVertices().get(0).getPosition().getX(),
+                (int)axis.getVertices().get(0).getPosition().getY(),
+                (int)axis.getVertices().get(1).getPosition().getX(),
+                (int)axis.getVertices().get(1).getPosition().getY()
+        );
     }
 
     public void rasterize(int x1, int y1, int x2, int y2, Color color) {

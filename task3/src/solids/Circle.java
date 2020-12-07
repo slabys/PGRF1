@@ -18,7 +18,7 @@ public class Circle extends Solid {
         }
         for (int i = 0; i < 35; i++) {
             getIndicies().add(i);
-            getIndicies().add(i++);
+            getIndicies().add(i+1);
         }
     }
 }

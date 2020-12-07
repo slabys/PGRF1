@@ -28,9 +28,11 @@ public class Controller3D implements Controller {
     private Circle circle = new Circle();
 
     private Renderer renderer;
-    private Camera cameraView = new Camera().withPosition(new Vec3D(-5, 0, 0)).addRadius(90);
+    private Camera cameraView = new Camera().withPosition(new Vec3D(-7, 4.5, 5));
     private int xPrev = 0, yPrev = 0;
-    private double yTrans = 0,xTrans = 0, yInc = 0, xInc = 0, zInc = 0, zoom = 1;
+    private double yTransform = 0, xTransform = 0, zTransform = 0,
+            yInc = 0, xInc = 0, zInc = 0, zoom = 1;
+    private boolean perspective = true;
 
     public Controller3D(Panel panel) {
         this.panel = panel;
@@ -60,8 +62,8 @@ public class Controller3D implements Controller {
             @Override
             public void mouseDragged(MouseEvent e) {
                 if(SwingUtilities.isLeftMouseButton(e)){
-                    cameraView = cameraView.addAzimuth(Math.PI * (xPrev - e.getX() ) / (float) panel.getWidth());
-                    cameraView = cameraView.addZenith(Math.PI * (e.getX() - yPrev) / (float) panel.getHeight());
+                    cameraView = cameraView.addAzimuth((float) Math.PI * (e.getX() - xPrev) / (float) panel.getWidth());
+                    cameraView = cameraView.addZenith((float) Math.PI * (e.getY() - yPrev) / (float) panel.getWidth());
                     update();
                     xPrev = e.getX();
                     yPrev = e.getY();
@@ -73,14 +75,6 @@ public class Controller3D implements Controller {
         panel.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                //Erase everything on "C" key press
-                if (e.getKeyCode() == KeyEvent.VK_C) {
-                    hardClear();
-                }
-                if(e.getKeyCode() == KeyEvent.VK_R){
-                    renderer.setModel(new Mat4RotXYZ(Math.PI / 2, Math.PI / 3, zInc+Math.PI / 4));
-                    //renderer.setModel(new Mat4RotXYZ(Math.PI/3, Math.PI/4, zInc*Math.PI/5));
-                }
                 if(e.getKeyCode() == KeyEvent.VK_SHIFT){
                     cameraView = cameraView.up(0.1);
                     update();
@@ -90,7 +84,7 @@ public class Controller3D implements Controller {
                     update();
                 }
                 if(e.getKeyCode() == KeyEvent.VK_W) {
-                    cameraView = cameraView.forward(0.1) ;
+                    cameraView = cameraView.forward(0.1);
                     update();
                 }
                 if(e.getKeyCode() == KeyEvent.VK_S){
@@ -105,47 +99,63 @@ public class Controller3D implements Controller {
                     cameraView = cameraView.left(0.1);
                     update();
                 }
-                if(e.getKeyCode() == KeyEvent.VK_O){
-                    renderer.setProjection(new Mat4OrthoRH(
-                            10,10,0.1,10));
+                if(e.getKeyCode() == KeyEvent.VK_P){
+                    if(perspective){
+                        renderer.setProjection(new Mat4OrthoRH(
+                                20,20,0.1,10));
+                    }else{
+                        renderer.setProjection(new Mat4PerspRH(
+                                (float)Math.PI/1.75,1, 0, 10));
+                    }
                     update();
-                }
-                if(e.getKeyCode() == KeyEvent.VK_I){
-                    renderer.setProjection(new Mat4PerspRH(
-                            (float)Math.PI/6,1, 0, 100));
-                    update();
+                    perspective = !perspective;
                 }
 
                 switch(e.getKeyCode()){
-                    case KeyEvent.VK_NUMPAD9:
+                    case KeyEvent.VK_E:
                         zInc +=0.1;
                         break;
-                    case KeyEvent.VK_NUMPAD7:
+                    case KeyEvent.VK_Q:
                         zInc -= 0.1;
                         break;
-                    case KeyEvent.VK_NUMPAD8:
+                    case KeyEvent.VK_R:
                         yInc += 0.1;
                         break;
-                    case KeyEvent.VK_NUMPAD5:
+                    case KeyEvent.VK_F:
                         yInc -= 0.1;
                         break;
-                    case KeyEvent.VK_NUMPAD4:
+                    case KeyEvent.VK_Z:
                         xInc -= 0.1;
                         break;
-                    case KeyEvent.VK_NUMPAD6:
+                    case KeyEvent.VK_C:
                         xInc += 0.1;
                         break;
-                    case KeyEvent.VK_RIGHT:
-                        xTrans += 0.1;
-                        break;
-                    case KeyEvent.VK_LEFT:
-                        xTrans -= 0.1;
-                        break;
+
                     case KeyEvent.VK_UP:
-                        yTrans += 0.1;
+                        yTransform += 0.1;
                         break;
                     case KeyEvent.VK_DOWN:
-                        yTrans -= 0.1;
+                        yTransform -= 0.1;
+                        break;
+                    case KeyEvent.VK_LEFT:
+                        xTransform -= 0.1;
+                        break;
+                    case KeyEvent.VK_RIGHT:
+                        xTransform += 0.1;
+                        break;
+                    case KeyEvent.VK_NUMPAD8:
+                        zTransform += 0.1;
+                        break;
+                    case KeyEvent.VK_NUMPAD5:
+                        zTransform -= 0.1;
+                        break;
+                    case KeyEvent.VK_1:
+                        System.out.println(zoom);
+                        zoom += 0.1;
+                        break;
+                    case KeyEvent.VK_2:
+                        System.out.println(zoom);
+                        zoom -= 0.1;
                         break;
                 }
                 update();
@@ -166,7 +176,7 @@ public class Controller3D implements Controller {
 
         renderer.setModel(
                 new Mat4RotXYZ(xInc, yInc, zInc)
-                        .mul(new Mat4Transl(xTrans,yTrans,0))
+                        .mul(new Mat4Transl(xTransform, yTransform,zTransform))
                         .mul(new Mat4Scale(zoom,zoom,zoom)));
 
         renderer.render(xAxis);
@@ -178,9 +188,5 @@ public class Controller3D implements Controller {
         renderer.render(circle);
 
         renderer.setView(cameraView.getViewMatrix());
-    }
-
-    private void hardClear() {
-        panel.clear();
     }
 }
