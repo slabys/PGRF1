@@ -200,7 +200,8 @@ public class Controller2D implements Controller {
                             "Shift + RMB - Activates ScanLine between Clipper and Polygon \n" +
                             "Ctrl + RMB - SeedFillBorder filling inner area with color \n"
                     );
-                    JOptionPane.showMessageDialog(frame, "Tips:\n" + label.getText(), "Help", PLAIN_MESSAGE);
+                    JOptionPane.showMessageDialog(
+                            frame, "Tips:\n" + label.getText(), "Help", PLAIN_MESSAGE);
                 }
             }
         });

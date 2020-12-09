@@ -17,13 +17,9 @@ public class Renderer {
     private Raster raster;
     private LineRasterizer lineRasterizer;
 
-    private Mat4 model = new Mat4RotXYZ(Math.PI / 2, Math.PI / 3, Math.PI / 4);
-    private Mat4 view = new Mat4ViewRH(
-            new Vec3D(1, 1, 1),
-            new Vec3D(-1, -1, -1),
-            new Vec3D(0, 1, 1));
-    private Mat4 projection = new Mat4PerspRH(
-            Math.PI / 2, 1, 0, 10);
+    private Mat4 model = new Mat4Identity();
+    private Mat4 view = new Mat4Identity();
+    private Mat4 projection = new Mat4Identity();
 
     private Color color = Color.YELLOW;
 
@@ -50,19 +46,17 @@ public class Renderer {
 
     public void render(Scene scene) {
         for (Solid solid : scene.getSolids()) {
-            render(solid);
+            renderSolid(solid);
         }
     }
 
-    public void render(Solid solid) {
-        Mat4 mat;
+    public void renderSolid(Solid solid) {
+        Mat4 mat = model.mul(view).mul(projection);
+        render(solid, mat);
 
-        if(solid.getClass().getName().equals("solids.Axis")){
-            mat = view.mul(projection);
-        }else{
-            mat = model.mul(view).mul(projection);
-        }
+    }
 
+    private void render(Solid solid, Mat4 mat) {
         color = solid.getColor();
 
         List<Vertex> tempVertices = new ArrayList<>();
@@ -94,6 +88,13 @@ public class Renderer {
             int y2 = (int) ((1 - vecB.getY()) * (raster.getHeight() - 1) / 2);
 
             lineRasterizer.rasterize(x1, y1, x2, y2, color);
+        }
+    }
+
+    public void renderAxis(List<Solid> axis) {
+        Mat4 mat = view.mul(projection);
+        for(Solid solid : axis){
+            render(solid, mat);
         }
     }
 }

@@ -26,6 +26,13 @@ public class Panel extends JPanel {
         setLoop();
     }
 
+    Panel(int WIDTH, int HEIGHT, Color color) {
+        setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        raster = new RasterBufferedImage(WIDTH, HEIGHT);
+        raster.setClearColor(color.getRGB());
+        setLoop();
+    }
+
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
